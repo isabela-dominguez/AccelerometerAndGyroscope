@@ -12,7 +12,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
-
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
 
@@ -34,32 +33,64 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         zValue = (TextView) findViewById(R.id.zValue);
 
         //gyroscope
-        xGyroValue = (TextView) findViewById(R.id.xValue);
-        yGyroValue = (TextView) findViewById(R.id.yValue);
-        zGyroValue = (TextView) findViewById(R.id.zValue);
+        xGyroValue = (TextView) findViewById(R.id.xGyroValue);
+        yGyroValue = (TextView) findViewById(R.id.yGyroValue);
+        zGyroValue = (TextView) findViewById(R.id.zGyroValue);
 
 
         //getting log on console
         Log.d(TAG, "onCreate: Init sensor services");
 
-        //sensor mangements
+        //sensor mangements and setting sensor type
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        sensorManager.registerListener((SensorEventListener) this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        //checking if sensors are available in device
+        if(accelerometer != null){
+            sensorManager.registerListener((SensorEventListener) this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            //logging on terminal
+            Log.d(TAG, "onCreate: registerd accelerometer listener");
+        }else {
+            xValue.setText("Accelerometer not found");
 
-        //logging on terminal
-        Log.d(TAG, "onCreate: registerd accelerometer listener");
+        }
+
+        if(mGyro != null){
+            sensorManager.registerListener((SensorEventListener) this, mGyro, SensorManager.SENSOR_DELAY_NORMAL);
+            //logging on terminal
+            Log.d(TAG, "onCreate: registered gyroscope listener");
+        }else {
+            xGyroValue.setText("Gyroscope not found");
+        }
+
+
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.d(TAG, "onSensorChanged: x: "+ sensorEvent.values[0] + "   Y:" +  sensorEvent.values[1] +"    z:" +  sensorEvent.values[2] ) ;
+        Sensor sensor = sensorEvent.sensor;
 
-        xValue.setText("xValue: " + sensorEvent.values[0]);
-        yValue.setText("yValue: " + sensorEvent.values[1]);
-        zValue.setText("zValue: " + sensorEvent.values[2]);
+        if(sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            //read accelerometer values
+            Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
+
+            xValue.setText("xValue: " + sensorEvent.values[0]);
+            yValue.setText("yValue: " + sensorEvent.values[1]);
+            zValue.setText("zValue: " + sensorEvent.values[2]);
+        }
+        else if(sensor.getType() == Sensor.TYPE_GYROSCOPE){
+            //read accelerometer values
+            Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
+
+            xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
+            yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
+            zGyroValue.setText("zGyroValue: " + sensorEvent.values[2]);
+        }
+
+
+
 
     }
 
