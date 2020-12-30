@@ -15,27 +15,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
-    Sensor accelerometer;
 
-    TextView xValue, yValue, zValue;
+    //sensors
+    private Sensor accelerometer, mGyro;
+
+    //Defining text variables
+    TextView xValue, yValue, zValue, xGyroValue, yGyroValue, zGyroValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //getting refrerences
+        //getting refrerences for texts
+        //accelerometer
         xValue = (TextView) findViewById(R.id.xValue);
         yValue = (TextView) findViewById(R.id.yValue);
         zValue = (TextView) findViewById(R.id.zValue);
 
+        //gyroscope
+        xGyroValue = (TextView) findViewById(R.id.xValue);
+        yGyroValue = (TextView) findViewById(R.id.yValue);
+        zGyroValue = (TextView) findViewById(R.id.zValue);
 
+
+        //getting log on console
         Log.d(TAG, "onCreate: Init sensor services");
+
+        //sensor mangements
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sensorManager.registerListener((SensorEventListener) this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        //logging on terminal
         Log.d(TAG, "onCreate: registerd accelerometer listener");
     }
 
