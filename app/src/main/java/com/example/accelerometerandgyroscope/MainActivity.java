@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
@@ -24,7 +25,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
     private static final String TAG = "MainActivity";
@@ -85,12 +88,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.d(TAG, "Writing to " + getStorageDir());
                 try {
                     writer = new FileWriter(new File(getStorageDir(), "App_AccelerometerAndGyroscope_"  + Calendar.getInstance().getTime() + ".csv"));
+                    writer.write(String.format("ACCELEROMETER X," + "ACCELEROMETER Y,"+ "ACCELEROMETER Z," + "GRYOSCOPE X," + "GRYOSCOPE Y," + "GRYOSCOPE Z," + "TIMESTAMP, \n"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_GAME);
+                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL); //sampling period is in microseconds. 5000 micro = 5 mili
 
                 isRunning = true;
                 return true;
@@ -99,8 +103,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
         buttonStop.setOnTouchListener(new View.OnTouchListener() {
+
             @Override
+
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                Log.d(TAG, "Button stop and closing file ");
+                xValue.setText("SAVING TO FILE " );
                 buttonStart.setEnabled(true);
                 buttonStop.setEnabled(false);
                 isRunning = false;
@@ -168,25 +176,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor sensor = sensorEvent.sensor;
 
+        //String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        //String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        String millisInString  = dateFormat.format(new Date());
+
         if(isRunning){
 
             if(sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 //read accelerometer values
-                Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
+               // Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
                 xValue.setText("xValue: " + sensorEvent.values[0]);
                 yValue.setText("yValue: " + sensorEvent.values[1]);
                 zValue.setText("zValue: " + sensorEvent.values[2]);
 
                 try {
-                    writer.write(String.format("%d, ACC, %f, %f, %f,\n", sensorEvent.timestamp,  sensorEvent.values[0],  sensorEvent.values[1],  sensorEvent.values[2]));
+                    writer.write(String.format("%d, ACC, %s,  %f, %f, %f,\n", sensorEvent.timestamp, millisInString,  sensorEvent.values[0],  sensorEvent.values[1],  sensorEvent.values[2]));
+                   // writer.write(String.format("%d, ACC, %f, %f, %f,\n", sensorEvent.timestamp,  sensorEvent.values[0],  sensorEvent.values[1],  sensorEvent.values[2]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             else if(sensor.getType() == Sensor.TYPE_GYROSCOPE){
                 //read accelerometer values
-                Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
+                //Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
                 xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
                 yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
