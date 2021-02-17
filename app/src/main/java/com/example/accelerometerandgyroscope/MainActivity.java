@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
+    private Chronometer chronometer;
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
 
@@ -65,15 +67,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //getting refrerences for texts
         //accelerometer
-        xValue = (TextView) findViewById(R.id.xValue);
-        yValue = (TextView) findViewById(R.id.yValue);
-        zValue = (TextView) findViewById(R.id.zValue);
+//        xValue = (TextView) findViewById(R.id.xValue);
+//        yValue = (TextView) findViewById(R.id.yValue);
+//        zValue = (TextView) findViewById(R.id.zValue);
+//
+//        //gyroscope
+//        xGyroValue = (TextView) findViewById(R.id.xGyroValue);
+//        yGyroValue = (TextView) findViewById(R.id.yGyroValue);
+//        zGyroValue = (TextView) findViewById(R.id.zGyroValue);
 
-        //gyroscope
-        xGyroValue = (TextView) findViewById(R.id.xGyroValue);
-        yGyroValue = (TextView) findViewById(R.id.yGyroValue);
-        zGyroValue = (TextView) findViewById(R.id.zGyroValue);
-
+        //chronometer
+        chronometer = findViewById(R.id.chronometer);
 
         //button
         buttonStart = (Button)findViewById(R.id.buttonStart);
@@ -96,11 +100,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroValues[1] = 0;
         gyroValues[2] = 0;
 
+        //Chronometer init
+
         //******************************************************
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         ArrayList<List<Sensor >>sensors = new ArrayList<List<Sensor >>();
         mRegisteredSensor = false;
-
 
 
 
@@ -110,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
                 Log.d(TAG, "Button started ");
+                chronometer.start();
+                Log.d(TAG, "Chronometer started ");
 
                 //writing to file
                 Log.d(TAG, "Writing to " + getStorageDir());
@@ -145,8 +152,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
 
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                chronometer.stop();
+                Log.d(TAG, "Chronometer started ");
                 Log.d(TAG, "Button stop and closing file ");
-                xValue.setText("SAVING TO FILE " );
+                //xValue.setText("SAVING TO FILE " );
                 buttonStart.setEnabled(true);
                 buttonStop.setEnabled(false);
                 isRunning = false;
@@ -225,11 +234,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //read accelerometer values
                // Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
-                xValue.setText("xValue: " + sensorEvent.values[0]);
-                yValue.setText("yValue: " + sensorEvent.values[1]);
-                zValue.setText("zValue: " + sensorEvent.values[2]);
+//                xValue.setText("xValue: " + sensorEvent.values[0]);
+//                yValue.setText("yValue: " + sensorEvent.values[1]);
+//                zValue.setText("zValue: " + sensorEvent.values[2]);
 
-                //setting values
+//                setting values
 //                accelerometerValues[0] = sensorEvent.values[0];
 //                accelerometerValues[1] = sensorEvent.values[1];
 //                accelerometerValues[2] = sensorEvent.values[2];
@@ -254,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //read accelerometer values
                 //Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
-                xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
-                yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
-                zGyroValue.setText("zGyroValue: " + sensorEvent.values[2]);
+//                xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
+//                yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
+//                zGyroValue.setText("zGyroValue: " + sensorEvent.values[2]);
 
                 //setting gyro values
-                //setting values
+//                //setting values
 //                gyroValues[0] = sensorEvent.values[0];
 //                gyroValues[1] = sensorEvent.values[1];
 //                gyroValues[2] = sensorEvent.values[2];
@@ -315,5 +324,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onStop() {
         super.onStop();
         mSensorManager.unregisterListener (this);
+    }
+
+    //chronometer
+    public void startChronometer(View v){
+        if(!isRunning){
+            chronometer.start();
+
+        }
+
     }
 }
