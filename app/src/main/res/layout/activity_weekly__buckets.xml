@@ -19,28 +19,31 @@
         android:id="@+id/textView36"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Pushups"
+        app:layout_constraintTop_toBottomOf="@+id/textView37"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="179dp"
-        tools:layout_editor_absoluteY="625dp" />
+        tools:layout_editor_absoluteX="179dp" />
 
     <TextView
         android:id="@+id/textView37"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Squats"
+        app:layout_constraintTop_toBottomOf="@+id/textView35"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="179dp"
-        tools:layout_editor_absoluteY="600dp" />
+        tools:layout_editor_absoluteX="179dp" />
 
     <TextView
         android:id="@+id/textView34"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Pullups"
+        app:layout_constraintTop_toBottomOf="@+id/textView36"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="179dp"
-        tools:layout_editor_absoluteY="652dp" />
+        tools:layout_editor_absoluteX="179dp" />
 
     <TextView
         android:id="@+id/textView31"
