@@ -1,6 +1,7 @@
 package com.example.accelerometerandgyroscope;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -27,6 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import android.content.Intent;
+
+import org.tensorflow.lite.Interpreter;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
     private Chronometer chronometer;
@@ -65,16 +70,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //getting refrerences for texts
-        //accelerometer
-//        xValue = (TextView) findViewById(R.id.xValue);
-//        yValue = (TextView) findViewById(R.id.yValue);
-//        zValue = (TextView) findViewById(R.id.zValue);
-//
-//        //gyroscope
-//        xGyroValue = (TextView) findViewById(R.id.xGyroValue);
-//        yGyroValue = (TextView) findViewById(R.id.yGyroValue);
-//        zGyroValue = (TextView) findViewById(R.id.zGyroValue);
 
         //chronometer
         chronometer = findViewById(R.id.chronometer);
@@ -167,7 +162,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
+                //change to prediction results
+                Intent a = new Intent(MainActivity.this, neuralNetworkResults.class);
+                a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(a);
+
+
+
+
                 return true;
+
             }
         });
 
@@ -234,15 +240,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //read accelerometer values
                // Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
-//                xValue.setText("xValue: " + sensorEvent.values[0]);
-//                yValue.setText("yValue: " + sensorEvent.values[1]);
-//                zValue.setText("zValue: " + sensorEvent.values[2]);
-
-//                setting values
-//                accelerometerValues[0] = sensorEvent.values[0];
-//                accelerometerValues[1] = sensorEvent.values[1];
-//                accelerometerValues[2] = sensorEvent.values[2];
-
 
 
                 Log.d(TAG, " to acc stack" );
@@ -263,15 +260,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //read accelerometer values
                 //Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
 
-//                xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
-//                yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
-//                zGyroValue.setText("zGyroValue: " + sensorEvent.values[2]);
-
-                //setting gyro values
-//                //setting values
-//                gyroValues[0] = sensorEvent.values[0];
-//                gyroValues[1] = sensorEvent.values[1];
-//                gyroValues[2] = sensorEvent.values[2];
 
                 Log.d(TAG, " to gyro stack" );
                 gyroValues = sensorEvent.values.clone ();
@@ -332,6 +320,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             chronometer.start();
 
         }
+
+    }
+
+    // create a new file with columns
+
+    //means and sma
+
+
+    //standard diviation
+
+    //fast fourier
+
+    public void featureExtraction(){
 
     }
 }
