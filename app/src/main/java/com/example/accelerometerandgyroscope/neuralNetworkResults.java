@@ -22,21 +22,22 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Hashtable;
 
 
 import android.widget.Toast;
 
 public class neuralNetworkResults extends AppCompatActivity {
 
+    //textviews
     TextView results, probabilities;
     String probs ="";
 
     //From: https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
     Interpreter tflite;
 
-
-
-    private static final String TAG = "NeuralNetwork";
+    //tag
+    private static final String TAG = "NeuralNetwork: ";
 
 
     @Override
@@ -51,16 +52,15 @@ public class neuralNetworkResults extends AppCompatActivity {
 
 
         // from https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
-        try {
-            tflite = new Interpreter(loadModelFile());
-        } catch (Exception ex){
-            ex.printStackTrace();
-            Log.d(TAG, "error while opening model  " );
-        }
+        openModel();
+
 
         //prediction values
-        float[][] prediction = doInference();
+        float[] test = new float[16];
+        float[][] prediction = doInference(test);
 
+
+        //tag of predictions
         Log.d(TAG, "predictions:  " + prediction);
 
 
@@ -69,13 +69,21 @@ public class neuralNetworkResults extends AppCompatActivity {
             probs += "at i: " + i + "  =>" + prediction[0][i] + "\n";
         }
 
+        //setting to label
         probabilities.setText(probs);
+
+        //hashed maps with labels
+        Hashtable<String, Float> mappedProbabilities = mapOutputToLabel(prediction);
+        Log.d(TAG, "hash map:  " + mappedProbabilities);
+
+
+
 
     }
 
 
 
-    private MappedByteBuffer loadModelFile() throws IOException{
+    public MappedByteBuffer loadModelFile() throws IOException{
         //open model suing input stream and memory map to it to load
         AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mlpExercise.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -86,9 +94,10 @@ public class neuralNetworkResults extends AppCompatActivity {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLenght);
     }
 
-    public float[][] doInference(){
+
+    public float[][] doInference(float[] inputNumbers){
         //input vals
-        //Turning numbers into bytebuffers
+        //change numbersTestInput to inputnumbers.
         float[] numbersTestInput = new float[16];
         numbersTestInput[0] = (float) 0.417475728;
         numbersTestInput[1] = (float) 0.4875;
@@ -118,6 +127,38 @@ public class neuralNetworkResults extends AppCompatActivity {
         return output;
 
 
+    }
+
+    public Hashtable<String, Float> mapOutputToLabel(float[][] outputProbs){
+        Hashtable<String, Float> mappedProbabilities = new Hashtable<String, Float>();
+        for(int i = 0; i <4; i++){
+            //probs += "at i: " + i + "  =>" + outputProbs[0][i] + "\n";
+            if (i == 0){
+                mappedProbabilities.put("Jumping jacks", outputProbs[0][i]);
+            }
+            else if (i == 1){
+                mappedProbabilities.put("Push ups", outputProbs[0][i]);
+            }
+            else if (i == 2){
+                mappedProbabilities.put("Squats", outputProbs[0][i]);
+            }
+            else {
+                mappedProbabilities.put("Sit ups", outputProbs[0][i]);
+            }
+
+        }
+
+        return mappedProbabilities;
+
+    }
+
+    public void openModel(){
+        try {
+            tflite = new Interpreter(loadModelFile());
+        } catch (Exception ex){
+            ex.printStackTrace();
+            Log.d(TAG, "error while opening model  " );
+        }
     }
 
 
