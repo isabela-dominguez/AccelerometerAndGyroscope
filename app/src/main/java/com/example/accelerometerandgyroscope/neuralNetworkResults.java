@@ -9,12 +9,14 @@ import android.speech.RecognitionListener;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.example.accelerometerandgyroscope.ml.MlpExercise;
+//import com.example.accelerometerandgyroscope.ml.MlpExercise;
 
+import org.jetbrains.annotations.NotNull;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.*;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -26,9 +28,13 @@ import android.widget.Toast;
 
 public class neuralNetworkResults extends AppCompatActivity {
 
-    Interpreter tflite;
     TextView results, probabilities;
     String probs ="";
+
+    //From: https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
+    Interpreter tflite;
+
+
 
     private static final String TAG = "NeuralNetwork";
 
@@ -42,6 +48,46 @@ public class neuralNetworkResults extends AppCompatActivity {
         results = (TextView) findViewById(R.id.results);
         probabilities = (TextView) findViewById(R.id.probabilities);
 
+
+
+        // from https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
+        try {
+            tflite = new Interpreter(loadModelFile());
+        } catch (Exception ex){
+            ex.printStackTrace();
+            Log.d(TAG, "error while opening model  " );
+        }
+
+        //prediction values
+        float[][] prediction = doInference();
+
+        Log.d(TAG, "predictions:  " + prediction);
+
+
+        //printing the values
+        for(int i = 0; i <4; i++){
+            probs += "at i: " + i + "  =>" + prediction[0][i] + "\n";
+        }
+
+        probabilities.setText(probs);
+
+    }
+
+
+
+    private MappedByteBuffer loadModelFile() throws IOException{
+        //open model suing input stream and memory map to it to load
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mlpExercise.tflite");
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLenght = fileDescriptor.getDeclaredLength();
+
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLenght);
+    }
+
+    public float[][] doInference(){
+        //input vals
         //Turning numbers into bytebuffers
         float[] numbersTestInput = new float[16];
         numbersTestInput[0] = (float) 0.417475728;
@@ -62,79 +108,17 @@ public class neuralNetworkResults extends AppCompatActivity {
         numbersTestInput[15] = (float) 0.218049168;
 
 
-        //this is telling it what data type it needs
-        ByteBuffer.allocate(4).putFloat(numbersTestInput[0]).array();
-        byte[] byteArray= FloatArray2ByteArray(numbersTestInput);
-        ByteBuffer byteBuffer= ByteBuffer.wrap(byteArray);
-        getOutput(byteBuffer);
+
+        //output shape
+        float[][] output = new float[1][4];
+
+        //run inference
+        tflite.run(numbersTestInput, output);
+
+        return output;
+
 
     }
-
-//    public TensorBuffer doInference(String inputString){
-//        //input
-//        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 16}, DataType.FLOAT32);
-//
-//        //output
-//
-//        TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-//    }
-
-    public static byte[] FloatArray2ByteArray(float[] values){
-        ByteBuffer buffer= ByteBuffer.allocate(4 * values.length);
-        for (float value : values){
-            buffer.putFloat(value);
-        }
-        return buffer.array();
-    }
-
-//    private MappedByteBuffer loadModelFile() throws IOException{
-//        //open model suing input stream and memory map to it to load
-//        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mlpExercise.tflite");
-//        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-//        FileChannel fileChannel = inputStream.getChannel();
-//        long startOffset = fileDescriptor.getStartOffset();
-//        long declaredLenght = fileDescriptor.getDeclaredLength();
-//
-//        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLenght);
-//    }
-
-
-
-    private void getOutput(ByteBuffer byteBuffer){
-        try {
-            MlpExercise model = MlpExercise.newInstance(getApplicationContext());
-
-            // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 16}, DataType.FLOAT32);
-            inputFeature0.loadBuffer(byteBuffer);
-
-            // Runs model inference and gets result.
-            MlpExercise.Outputs outputs = model.process(inputFeature0);
-            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-
-
-            Toast.makeText(this,"output: "+outputFeature0.toString(),Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "output: " +outputFeature0.toString());
-            results.setText("output: " +outputFeature0.toString() + "thing 0 " + outputFeature0.getFloatValue(0) +"thing 1 " + outputFeature0.getFloatValue(1) + "data type " + outputFeature0.getDataType() + " float array: " +outputFeature0.getFloatArray() + " \nbuffer " + outputFeature0.getBuffer() + " shape format " + outputFeature0.getShape() + "\n" );
-
-            for(int i = 0; i <4; i++){
-                probs += "at i: " + i + "  =>" + outputFeature0.getFloatValue(i) + "\n";
-            }
-
-            probabilities.setText(probs);
-
-            // Releases model resources if no longer used.
-            model.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-
-    }
-
-
-
-
 
 
 
