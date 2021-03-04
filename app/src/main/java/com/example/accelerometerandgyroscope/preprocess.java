@@ -99,6 +99,7 @@ public class preprocess {
 
     private void normalize() {
         // normalized value = (value - minimum) / (maximum = minimum)
+        // SEE NOTE IN CONSTRUCTOR
 
         // x acceleration mean (FIND MAX SENSOR VALUE?)
         features[0] = (features[0] - 0) / (124 - 0);
