@@ -53,6 +53,7 @@ public class welcomePage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent a = new Intent(welcomePage.this, excerciseDescriptions.class);
+                //Intent a = new Intent(welcomePage.this, neuralNetworkResults.class);
                 a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(a);
             }

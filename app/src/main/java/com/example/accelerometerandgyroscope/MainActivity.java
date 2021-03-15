@@ -1,6 +1,7 @@
 package com.example.accelerometerandgyroscope;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +29,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import android.content.Intent;
+
+import org.tensorflow.lite.Interpreter;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
     private Chronometer chronometer;
@@ -54,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float [] accelerometerValues = new float [3];
     private float [] gyroValues = new float [3];
 
+    //window array
+    public float[][] rawWindowSensorData = new float[4][6];
+
+    //counter
+    private int counter = 0;
 
 
 
@@ -65,16 +76,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //getting refrerences for texts
-        //accelerometer
-//        xValue = (TextView) findViewById(R.id.xValue);
-//        yValue = (TextView) findViewById(R.id.yValue);
-//        zValue = (TextView) findViewById(R.id.zValue);
-//
-//        //gyroscope
-//        xGyroValue = (TextView) findViewById(R.id.xGyroValue);
-//        yGyroValue = (TextView) findViewById(R.id.yGyroValue);
-//        zGyroValue = (TextView) findViewById(R.id.zGyroValue);
 
         //chronometer
         chronometer = findViewById(R.id.chronometer);
@@ -91,8 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //sensor mangements and setting sensor type
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-
-
+        //initializng arrays for sensors
         accelerometerValues[0] = 0;
         accelerometerValues[1] = 0;
         accelerometerValues[2] = 0;
@@ -100,12 +100,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroValues[1] = 0;
         gyroValues[2] = 0;
 
-        //Chronometer init
+
 
         //******************************************************
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         ArrayList<List<Sensor >>sensors = new ArrayList<List<Sensor >>();
         mRegisteredSensor = false;
+
+//        //test neuralNetwork results functions
+//        float[] test = new float[16];
+//
+//        neuralNetworkResults test1 = new neuralNetworkResults();
+//        float[][] prediction =  test1.doInference(test);
 
 
 
@@ -128,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     e.printStackTrace();
                 }
 
-//                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
-//                sensorManager.registerListener(MainActivity.this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_UI); //sampling period is in microseconds. 5000 micro = 5 mili. 0.1 seconds is 100 000 microseconds
 
 
                 sensors.add (mSensorManager.getSensorList (Sensor.TYPE_ACCELEROMETER));
@@ -167,7 +171,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
+                //change to prediction results
+                Intent a = new Intent(MainActivity.this, neuralNetworkResults.class);
+                a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(a);
+
+
+
+
                 return true;
+
             }
         });
 
@@ -181,18 +196,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //checking if sensors are available in device
         if(accelerometer != null){
-            //sensorManager.registerListener((SensorEventListener) this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            //logging on terminal
-           // Log.d(TAG, "onCreate: registerd accelerometer listener");
+
+            Log.d(TAG, "onCreate: registerd accelerometer listener");
         }else {
             xValue.setText("Accelerometer not found");
 
         }
 
         if(mGyro != null){
-           // sensorManager.registerListener((SensorEventListener) this, mGyro, SensorManager.SENSOR_DELAY_NORMAL);
-            //logging on terminal
-            //Log.d(TAG, "onCreate: registered gyroscope listener");
+
+            Log.d(TAG, "onCreate: registered gyroscope listener");
         }else {
             xGyroValue.setText("Gyroscope not found");
         }
@@ -221,8 +234,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor sensor = sensorEvent.sensor;
 
-        //String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-        //String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        //String date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
         String millisInString  = dateFormat.format(new Date());
 
@@ -231,19 +243,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
             if(sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                //read accelerometer values
-               // Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
-
-//                xValue.setText("xValue: " + sensorEvent.values[0]);
-//                yValue.setText("yValue: " + sensorEvent.values[1]);
-//                zValue.setText("zValue: " + sensorEvent.values[2]);
-
-//                setting values
-//                accelerometerValues[0] = sensorEvent.values[0];
-//                accelerometerValues[1] = sensorEvent.values[1];
-//                accelerometerValues[2] = sensorEvent.values[2];
-
-
 
                 Log.d(TAG, " to acc stack" );
                 accelerometerValues = sensorEvent.values.clone ();
@@ -256,30 +255,57 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-
-
             }
             else if(sensor.getType() == Sensor.TYPE_GYROSCOPE){
-                //read accelerometer values
-                //Log.d(TAG, "onSensorChanged: x: " + sensorEvent.values[0] + "   Y:" + sensorEvent.values[1] + "    z:" + sensorEvent.values[2]);
-
-//                xGyroValue.setText("xGyroValue: " + sensorEvent.values[0]);
-//                yGyroValue.setText("yGyroValue: " + sensorEvent.values[1]);
-//                zGyroValue.setText("zGyroValue: " + sensorEvent.values[2]);
-
-                //setting gyro values
-//                //setting values
-//                gyroValues[0] = sensorEvent.values[0];
-//                gyroValues[1] = sensorEvent.values[1];
-//                gyroValues[2] = sensorEvent.values[2];
 
                 Log.d(TAG, " to gyro stack" );
                 gyroValues = sensorEvent.values.clone ();
 
 
+            }
+
+            Log.d(TAG, "counter val: " + counter );
+
+            //saving to arrays and checking counter
+            if (counter <= 3){
+                //save data to array
+                rawWindowSensorData[counter][0] = accelerometerValues[0];
+                rawWindowSensorData[counter][1] = accelerometerValues[1];
+                rawWindowSensorData[counter][2] = accelerometerValues[2];
+                rawWindowSensorData[counter][3] = gyroValues[0];
+                rawWindowSensorData[counter][4] = gyroValues[1];
+                rawWindowSensorData[counter][5] = gyroValues[2];
+
+                Log.d(TAG, "counter val should be zero b4: " + counter );
+
+
+
+
+                //coutner is 3 so it's looking at that window
+                if (counter == 3){
+                    Log.d(TAG, "saving window array: " + Arrays.deepToString(rawWindowSensorData) );
+
+                    //send data to preprocess
+
+
+                    //do operations for prediction
+
+                    //store data in a hashmap and check which exercise has the highest number
+
+
+                    //reiniate counter
+                    counter = 0;
+                    Log.d(TAG, "counter val should be zero after: " + counter );
+                }
+                else {
+                    counter++;
+                }
 
 
             }
+
+
+
 
 
 
@@ -332,6 +358,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             chronometer.start();
 
         }
+
+    }
+
+
+    public void featureExtraction(){
 
     }
 }
