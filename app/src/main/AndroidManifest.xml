@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AccelerometerAndGyroscope">
+        <activity android:name=".weekly_Buckets"></activity>
         <activity android:name=".neuralNetworkResults"></activity>
         <activity android:name=".excerciseDescriptions" />
         <activity android:name=".welcomePage">
