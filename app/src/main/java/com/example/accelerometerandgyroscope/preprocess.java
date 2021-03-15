@@ -9,9 +9,9 @@ public class preprocess {
     // x, y, z accel SD; x, y, z gyro SD; x, y, z accel fft
 
     public preprocess(float[][] exerData) {
-        means_and_SMA(exerData);
-        std_devs(exerData);
-        fast_fourier(exerData);
+        means_and_SMA(exerData);    // 0 to 6
+        std_devs(exerData);         // 7 to 12
+        fast_fourier(exerData);     // 13 to 15
         normalize();
         // NORMALIZATION IS CURRENTLY USING MAX & MIN VALUES FROM TRAINING DATA
         // not too sure what to do about this...
@@ -92,7 +92,7 @@ public class preprocess {
 
             // get real components' absolute values & sum them for this axis
             for (int m = 0; m < loops; m++) {
-                features[i + 14] += (float) complex[m].getReal();
+                features[i + 13] += (float) complex[m].getReal();
             }
         }
     }
