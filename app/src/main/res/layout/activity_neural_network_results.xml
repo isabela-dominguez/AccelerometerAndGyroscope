@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+
+    tools:context=".neuralNetworkResults">
+
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/titlepage"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="24dp"-->
+    <!--        android:layout_marginTop="24dp"-->
+    <!--        android:lineSpacingExtra="8dp"-->
+    <!--        android:text="Exercises"-->
+    <!--        android:fontFamily="@font/vidaloka"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textColor="#FFFFFF"-->
+    <!--        android:textSize="38sp"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+
+    <!--        />-->
+
+
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/subtitlepage"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="24dp"-->
+    <!--        android:layout_marginTop="8dp"-->
+    <!--        android:lineSpacingExtra="8dp"-->
+    <!--        android:fontFamily="@font/mlight"-->
+    <!--        android:text="all levels are welcome"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textColor="#FFFFFF"-->
+    <!--        android:textSize="20sp"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/titlepage"/>-->
+
+
+
+    <!--    <View-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="1dp"-->
+    <!--        android:id="@+id/divpage"-->
+    <!--        android:layout_marginEnd="26dp"-->
+    <!--        android:layout_marginStart="26dp"-->
+    <!--        android:layout_marginTop="20dp"-->
+    <!--        android:background="#25293E"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/titlepage"-->
+    <!--        />-->
+
+
+<!--    <TextView-->
+<!--        android:id="@+id/instructions1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="24dp"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:lineSpacingExtra="8dp"-->
+<!--        android:text="Exercise Prediction"-->
+<!--        android:fontFamily="@font/bubblebobble"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="#FFFFFF"-->
+<!--        android:textSize="40sp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+
+<!--        />-->
+
+    <TextView
+        android:id="@+id/results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="30dp"
+        android:lineSpacingExtra="8dp"
+        android:fontFamily="@font/bubblebobble"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+
+    <TextView
+        android:id="@+id/probabilities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="400dp"
+        android:lineSpacingExtra="8dp"
+        android:fontFamily="@font/bubblebobble"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/results"
+
+        />
+
+
+<!--    <TextView-->
+<!--        android:id="@+id/subintropage1"-->
+<!--        android:layout_width="350dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="4dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:lineSpacingExtra="8dp"-->
+<!--        android:fontFamily="@font/mlight"-->
+<!--        android:text="........................... Insert prediction.................."-->
+
+<!--        android:textColor="#FFFFFF"-->
+<!--        android:textSize="18sp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/instructions"/>-->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/divpage2"
+        android:layout_marginEnd="26dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="20dp"
+        android:background="#25293E"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/gymnastics"-->
+<!--        android:src="@drawable/gymnastics"-->
+<!--        android:alpha="1"-->
+<!--        android:scaleType="fitCenter"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_marginTop="80dp"-->
+<!--        android:layout_marginStart="0dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@id/divpage2"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/bgprogress"-->
+<!--        />-->
+
+
+    <View
+        android:id="@+id/bgprogress"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="0dp"
+        android:background="#66FFCC"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+
+
+    <TextView
+        android:id="@+id/btnexercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/mlight"
+        android:lineSpacingExtra="8dp"
+        android:text="Go to weekly achivements"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
