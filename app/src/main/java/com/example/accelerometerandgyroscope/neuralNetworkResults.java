@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 import android.widget.Toast;
 
-public class neuralNetworkResults extends AppCompatActivity {
+public class neuralNetworkResults extends AppCompatActivity{
 
     //textviews
     TextView results, probabilities;
@@ -50,54 +54,11 @@ public class neuralNetworkResults extends AppCompatActivity {
         probabilities = (TextView) findViewById(R.id.probabilities);
 
 
+        //pre-process tests
+        //values
+        float[][] preprocessTest = {{(float) -19.6091,	(float)-19.6085,	(float)1.4533,	(float)-2.3289, (float)-3.1108, (float)1.1325}, {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.975},
+                {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.9751}, {(float)19.6079,	(float)18.4072,	(float)19.6085,	(float)-5.6551,(float)	0.8399,	(float)9.0988}, {(float)19.6079,	(float)-7.8961,	(float)19.6085,	(float)3.682,	(float)2.1634,	(float)-1.3134}};
 
-        // from https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
-        openModel();
-
-
-        //prediction values
-        float[] test = new float[16];
-        float[][] prediction = doInference(test);
-
-
-        //tag of predictions
-        Log.d(TAG, "predictions:  " + prediction);
-
-
-        //printing the values
-        for(int i = 0; i <4; i++){
-            probs += "at i: " + i + "  =>" + prediction[0][i] + "\n";
-        }
-
-        //setting to label
-        probabilities.setText(probs);
-
-        //hashed maps with labels
-        Hashtable<String, Float> mappedProbabilities = mapOutputToLabel(prediction);
-        Log.d(TAG, "hash map:  " + mappedProbabilities);
-
-
-
-
-    }
-
-
-
-    public MappedByteBuffer loadModelFile() throws IOException{
-        //open model suing input stream and memory map to it to load
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mlpExercise.tflite");
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLenght = fileDescriptor.getDeclaredLength();
-
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLenght);
-    }
-
-
-    public float[][] doInference(float[] inputNumbers){
-        //input vals
-        //change numbersTestInput to inputnumbers.
         float[] numbersTestInput = new float[16];
         numbersTestInput[0] = (float) 0.417475728;
         numbersTestInput[1] = (float) 0.4875;
@@ -116,50 +77,39 @@ public class neuralNetworkResults extends AppCompatActivity {
         numbersTestInput[14] = (float) 0.241270137;
         numbersTestInput[15] = (float) 0.218049168;
 
+//        Log.d(TAG, "Pre process tests: " + Arrays.deepToString(preprocessTest) );
+//        preprocess test1 = new preprocess(preprocessTest);
+//        float[] featuresResultTest = test1.getFeatures();
+//        float[] featuresResultTest1 = test1.features;
+//        for(int i = 0; i < featuresResultTest1.length; i++){
+//            Log.d(TAG, "array at   " + i + "   " + featuresResultTest1[i]);
+//        }
 
+        //testing neural network functiosns from class
+        neuralNetwork net = new neuralNetwork(this);
+        net.predict(numbersTestInput);
+        Log.d(TAG, "hash map with the new class:  " + net.getMap());
 
-        //output shape
-        float[][] output = new float[1][4];
+        //setting to label
+        probabilities.setText("Push ups: " + net.getMap().get("Push ups") + " Jumping jacks: " +net.getMap().get("Jumping jacks") + " Sit ups: " +net.getMap().get("Sit ups") + " Squats: " +net.getMap().get("Squats"));
 
-        //run inference
-        tflite.run(numbersTestInput, output);
+        //checking which item has highest probability
+        float max = Collections.max(net.mappedProbabilities.values());
 
-        return output;
-
-
-    }
-
-    public Hashtable<String, Float> mapOutputToLabel(float[][] outputProbs){
-        Hashtable<String, Float> mappedProbabilities = new Hashtable<String, Float>();
-        for(int i = 0; i <4; i++){
-            //probs += "at i: " + i + "  =>" + outputProbs[0][i] + "\n";
-            if (i == 0){
-                mappedProbabilities.put("Jumping jacks", outputProbs[0][i]);
-            }
-            else if (i == 1){
-                mappedProbabilities.put("Push ups", outputProbs[0][i]);
-            }
-            else if (i == 2){
-                mappedProbabilities.put("Squats", outputProbs[0][i]);
-            }
-            else {
-                mappedProbabilities.put("Sit ups", outputProbs[0][i]);
+        for (Map.Entry<String, Float> entry : net.mappedProbabilities.entrySet()){
+            if(entry.getValue()==max){
+                results.setText("Result: " + entry.getKey());
             }
 
         }
 
-        return mappedProbabilities;
+
 
     }
 
-    public void openModel(){
-        try {
-            tflite = new Interpreter(loadModelFile());
-        } catch (Exception ex){
-            ex.printStackTrace();
-            Log.d(TAG, "error while opening model  " );
-        }
-    }
+
+
+
 
 
 

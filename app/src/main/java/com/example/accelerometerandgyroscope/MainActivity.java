@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Chronometer chronometer;
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
+
+    //textviews
+    TextView realTimePredictions;
 
     //******
     private SensorManager mSensorManager;
@@ -61,11 +66,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float [] gyroValues = new float [3];
 
     //window array
-    public float[][] rawWindowSensorData = new float[4][6];
+    public float[][] rawWindowSensorData = new float[5][6];
 
     //counter
     private int counter = 0;
 
+
+    //neural net results
+    neuralNetwork net = new neuralNetwork(this);
 
 
 
@@ -79,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //chronometer
         chronometer = findViewById(R.id.chronometer);
+        realTimePredictions = (TextView) findViewById(R.id.realtimepredictions);
 
         //button
         buttonStart = (Button)findViewById(R.id.buttonStart);
@@ -107,11 +116,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ArrayList<List<Sensor >>sensors = new ArrayList<List<Sensor >>();
         mRegisteredSensor = false;
 
-//        //test neuralNetwork results functions
-//        float[] test = new float[16];
-//
-//        neuralNetworkResults test1 = new neuralNetworkResults();
-//        float[][] prediction =  test1.doInference(test);
+
 
 
 
@@ -156,8 +161,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
 
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
                 chronometer.stop();
-                Log.d(TAG, "Chronometer started ");
+                Log.d(TAG, "Chronometer stop ");
                 Log.d(TAG, "Button stop and closing file ");
                 //xValue.setText("SAVING TO FILE " );
                 buttonStart.setEnabled(true);
@@ -267,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "counter val: " + counter );
 
             //saving to arrays and checking counter
-            if (counter <= 3){
+            if (counter <= 4){
                 //save data to array
                 rawWindowSensorData[counter][0] = accelerometerValues[0];
                 rawWindowSensorData[counter][1] = accelerometerValues[1];
@@ -281,16 +287,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-                //coutner is 3 so it's looking at that window
-                if (counter == 3){
+                //coutner is 4 so it's looking at that window
+                if (counter == 4){
+                    //checking window being sent
                     Log.d(TAG, "saving window array: " + Arrays.deepToString(rawWindowSensorData) );
 
+                    //test input
+                    float [] testInput = net.testInput();
+
                     //send data to preprocess
+//                    preprocess preprocessOutput = new preprocess(rawWindowSensorData);
+//                    Log.d(TAG, "lenght preprocess coming out  " + preprocessOutput.features.length);
+//
+
+
+//
+//                    for(int i = 0; i < preprocessOutputFixPreprocess.length; i++){
+//                        Log.d(TAG, "preprocess output array at   " + i + "   " + preprocessOutputFixPreprocess[i]);
+//                    }
+//                    preprocessOutputFixPreprocess[14] = 0;
+
 
 
                     //do operations for prediction
+                    net.predict(testInput);
 
-                    //store data in a hashmap and check which exercise has the highest number
+
+                    //Setting text
+                    realTimePredictions.setText(net.getExerciseOfMaxProbability() + "Probability: " + net.getMaxProbability());
 
 
                     //reiniate counter
