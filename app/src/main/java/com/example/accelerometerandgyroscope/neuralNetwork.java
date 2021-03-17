@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -59,10 +60,15 @@ public class neuralNetwork {
     public Hashtable<String, Float> mappedProbabilities = new Hashtable<>();
 
     //individual probability:
-    public float pushUpsProb;
-    public float jumpingJacksProb;
-    public float squatsProb;
-    public float sitUpsProb;
+    public static float pushUpsProb;
+    public static float jumpingJacksProb;
+    public static float squatsProb;
+    public static float sitUpsProb;
+    public static String finalExercisePrediction;
+
+
+
+
     //context
     private Context context;
 
@@ -189,6 +195,7 @@ public class neuralNetwork {
 
         for (Map.Entry<String, Float> entry : mappedProbabilities.entrySet()) {
             if (entry.getValue() == max) {
+                finalExercisePrediction = entry.getKey();
                 return entry.getKey() ; // + probability linked to it
             }
 
@@ -229,5 +236,9 @@ public class neuralNetwork {
             return sitUpsProb;
         }
         return 0;
+    }
+
+    public String getFinalProbabilityExercise(){
+        return finalExercisePrediction;
     }
 }

@@ -11,8 +11,10 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,8 +45,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
 
-    //textviews
+    //textviews and image
     TextView realTimePredictions;
+    ImageView drop;
 
     //******
     private SensorManager mSensorManager;
@@ -74,6 +79,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //neural net results
     neuralNetwork net = new neuralNetwork(this);
+
+    //decimal format
+    DecimalFormat decimalFormat =  new DecimalFormat("##.##");
+
+    //translate animation
+    TranslateAnimation moveDownwards;
 
 
 
@@ -109,6 +120,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroValues[1] = 0;
         gyroValues[2] = 0;
 
+        //decimal format
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+
+        //animation for drop
+        moveDownwards = new TranslateAnimation(0, 0, -100, 300);
+        moveDownwards.setDuration(1000);
+        moveDownwards.setFillAfter(true);
+        moveDownwards.setRepeatCount(-1);
+
+        drop =  (ImageView) findViewById(R.id.drop);
+
+
+
+
 
 
         //******************************************************
@@ -123,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         buttonStart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                drop.startAnimation(moveDownwards);
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
                 Log.d(TAG, "Button started ");
@@ -314,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
                     //Setting text
-                    realTimePredictions.setText(net.getExerciseOfMaxProbability() + "Probability: " + net.getMaxProbability());
+                    realTimePredictions.setText(net.getExerciseOfMaxProbability() + "\n" + decimalFormat.format(net.getMaxProbability()*100) +"%");
 
 
                     //reiniate counter
