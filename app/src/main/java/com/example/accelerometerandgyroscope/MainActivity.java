@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //textviews and image
     TextView realTimePredictions;
-    ImageView drop;
+    ImageView drop, buckettop, bucketbottom;
 
     //******
     private SensorManager mSensorManager;
@@ -124,12 +124,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
 
         //animation for drop
-        moveDownwards = new TranslateAnimation(0, 0, -100, 300);
+        moveDownwards = new TranslateAnimation(0, 0, -100, 400);
         moveDownwards.setDuration(1000);
         moveDownwards.setFillAfter(true);
         moveDownwards.setRepeatCount(-1);
 
         drop =  (ImageView) findViewById(R.id.drop);
+        bucketbottom = (ImageView) findViewById(R.id.bucketbottom);
+        buckettop = (ImageView) findViewById(R.id.buckettop);
 
 
 
@@ -148,7 +150,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         buttonStart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                //UI stuff
                 drop.startAnimation(moveDownwards);
+                bucketbottom.setImageResource(R.drawable.bottombucket);
+                buckettop.setImageResource(R.drawable.topbucket);
+
+
+                //buttons
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
                 Log.d(TAG, "Button started ");

@@ -7,6 +7,8 @@ import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,9 +45,12 @@ import android.widget.Toast;
 public class neuralNetworkResults extends AppCompatActivity{
 
     //textviews
-    TextView probabilities;
-    ImageView exerciseImg;
+    TextView probabilities, btnweekly;
+    ImageView exerciseImg, greatworkout;
     String probs ="";
+
+    //animation
+    Animation animpage, bttone, bttwo, btthree, ltr;
 
 
     //writer
@@ -71,6 +76,15 @@ public class neuralNetworkResults extends AppCompatActivity{
         //setting up text
         probabilities = (TextView) findViewById(R.id.probabilities);
         exerciseImg = (ImageView) findViewById(R.id.workoutResult);
+        greatworkout = (ImageView) findViewById(R.id.greatWorkout);
+        btnweekly = (TextView) findViewById(R.id.btnbuckets);
+
+        //load animation
+        animpage = AnimationUtils.loadAnimation(this, R.anim.animpage);
+        bttone = AnimationUtils.loadAnimation(this, R.anim.bttone);
+        bttwo = AnimationUtils.loadAnimation(this, R.anim.bttwo);
+        btthree = AnimationUtils.loadAnimation(this, R.anim.btthree);
+        ltr = AnimationUtils.loadAnimation(this, R.anim.ltr);
 
 
         //pre-process tests
@@ -78,6 +92,9 @@ public class neuralNetworkResults extends AppCompatActivity{
         //float[][] preprocessTest = {{(float) -19.6091,	(float)-19.6085,	(float)1.4533,	(float)-2.3289, (float)-3.1108, (float)1.1325}, {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.975},
                // {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.9751}, {(float)19.6079,	(float)18.4072,	(float)19.6085,	(float)-5.6551,(float)	0.8399,	(float)9.0988}, {(float)19.6079,	(float)-7.8961,	(float)19.6085,	(float)3.682,	(float)2.1634,	(float)-1.3134}};
 
+
+        greatworkout.startAnimation(bttone);
+        btnweekly.startAnimation(btthree);
 
         String result = neuralNetwork.finalExercisePrediction;
         float prob;

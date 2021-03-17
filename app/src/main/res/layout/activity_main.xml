@@ -38,6 +38,36 @@
         />
 
     <ImageView
+        android:id="@+id/bucket"
+        android:src="@drawable/emptybucket"
+        android:alpha="1"
+        android:scaleType="fitCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/drop"
+        />
+
+    <ImageView
+        android:id="@+id/buckettop"
+
+        android:alpha="1"
+        android:scaleType="fitCenter"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/drop"
+        />
+
+    <ImageView
         android:id="@+id/drop"
         android:src="@drawable/drop"
         android:alpha="1"
@@ -52,14 +82,16 @@
 
         />
 
+
+
     <ImageView
-        android:id="@+id/bucket"
-        android:src="@drawable/bucket"
+        android:id="@+id/bucketbottom"
+
         android:alpha="1"
         android:scaleType="fitCenter"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="60dp"
         android:layout_marginStart="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
