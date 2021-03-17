@@ -95,6 +95,8 @@ public class neuralNetworkResults extends AppCompatActivity{
 
         greatworkout.startAnimation(bttone);
         btnweekly.startAnimation(btthree);
+        probabilities.startAnimation(bttone);
+        exerciseImg.startAnimation(bttone);
 
         String result = neuralNetwork.finalExercisePrediction;
         float prob;

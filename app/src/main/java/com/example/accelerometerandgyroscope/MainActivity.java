@@ -166,12 +166,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //writing to file
                 Log.d(TAG, "Writing to " + getStorageDir());
 
-                try {
-                    writer = new FileWriter(new File(getStorageDir(), "App_AccelerometerAndGyroscope_"  + Calendar.getInstance().getTime() + ".csv"));
-                    writer.write(String.format("ACCELEROMETER X," + "ACCELEROMETER Y,"+ "ACCELEROMETER Z," + "GRYOSCOPE X," + "GRYOSCOPE Y," + "GRYOSCOPE Z," + "TIMESTAMP, \n"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer = new FileWriter(new File(getStorageDir(), "App_AccelerometerAndGyroscope_"  + Calendar.getInstance().getTime() + ".csv"));
+//                    writer.write(String.format("ACCELEROMETER X," + "ACCELEROMETER Y,"+ "ACCELEROMETER Z," + "GRYOSCOPE X," + "GRYOSCOPE Y," + "GRYOSCOPE Z," + "TIMESTAMP, \n"));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
 
@@ -206,11 +206,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorManager.flush(MainActivity.this);
                 sensorManager.unregisterListener(MainActivity.this);
 
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
                 //change to prediction results
@@ -287,11 +287,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.d(TAG, " to acc stack" );
                 accelerometerValues = sensorEvent.values.clone ();
 
-                try {
-                    writer.write(String.format("%f, %f, %f, %f, %f, %f, %s\n", accelerometerValues[0], accelerometerValues[1], accelerometerValues[2], gyroValues[0],  gyroValues[1],  gyroValues[2], millisInString));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer.write(String.format("%f, %f, %f, %f, %f, %f, %s\n", accelerometerValues[0], accelerometerValues[1], accelerometerValues[2], gyroValues[0],  gyroValues[1],  gyroValues[2], millisInString));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
 
