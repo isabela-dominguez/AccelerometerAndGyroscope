@@ -14,7 +14,7 @@ public class excerciseDescriptions extends AppCompatActivity {
     TextView   btnexercise;
     TextView titlepage;
     Animation animpage, bttone, bttwo, btthree, ltr;
-    ImageView imgpage;
+    //ImageView imgpage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +34,11 @@ public class excerciseDescriptions extends AppCompatActivity {
         titlepage = (TextView) findViewById(R.id.instructions);
         //subtitlepage = (TextView) findViewById(R.id.subtitlepage);
         btnexercise = (TextView) findViewById(R.id.btnexercise);
-        imgpage = (ImageView) findViewById(R.id.bucket);
+        //imgpage = (ImageView) findViewById(R.id.bucket);
 
 
         //export animate
-        imgpage.startAnimation(animpage);
+        //imgpage.startAnimation(animpage);
         titlepage.startAnimation(bttone);
         btnexercise.startAnimation(btthree);
 

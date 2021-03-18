@@ -7,11 +7,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,12 +22,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Chronometer chronometer;
     private static final String TAG = "MainActivity";
     private SensorManager sensorManager;
+
+    //textviews and image
+    TextView realTimePredictions;
+    ImageView drop, buckettop, bucketbottom;
 
     //******
     private SensorManager mSensorManager;
@@ -61,11 +71,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float [] gyroValues = new float [3];
 
     //window array
-    public float[][] rawWindowSensorData = new float[4][6];
+    public float[][] rawWindowSensorData = new float[5][6];
 
     //counter
     private int counter = 0;
 
+
+    //neural net results
+    neuralNetwork net = new neuralNetwork(this);
+
+    //decimal format
+    DecimalFormat decimalFormat =  new DecimalFormat("##.##");
+
+    //translate animation
+    TranslateAnimation moveDownwards;
 
 
 
@@ -79,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //chronometer
         chronometer = findViewById(R.id.chronometer);
+        realTimePredictions = (TextView) findViewById(R.id.realtimepredictions);
 
         //button
         buttonStart = (Button)findViewById(R.id.buttonStart);
@@ -100,6 +120,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroValues[1] = 0;
         gyroValues[2] = 0;
 
+        //decimal format
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+
+        //animation for drop
+        moveDownwards = new TranslateAnimation(0, 0, -100, 400);
+        moveDownwards.setDuration(1000);
+        moveDownwards.setFillAfter(true);
+        moveDownwards.setRepeatCount(-1);
+
+        drop =  (ImageView) findViewById(R.id.drop);
+        bucketbottom = (ImageView) findViewById(R.id.bucketbottom);
+        buckettop = (ImageView) findViewById(R.id.buckettop);
+
+
+
+
 
 
         //******************************************************
@@ -107,17 +143,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ArrayList<List<Sensor >>sensors = new ArrayList<List<Sensor >>();
         mRegisteredSensor = false;
 
-//        //test neuralNetwork results functions
-//        float[] test = new float[16];
-//
-//        neuralNetworkResults test1 = new neuralNetworkResults();
-//        float[][] prediction =  test1.doInference(test);
+
 
 
 
         buttonStart.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                //UI stuff
+                drop.startAnimation(moveDownwards);
+                bucketbottom.setImageResource(R.drawable.bottombucket);
+                buckettop.setImageResource(R.drawable.topbucket);
+
+
+                //buttons
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
                 Log.d(TAG, "Button started ");
@@ -127,12 +166,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //writing to file
                 Log.d(TAG, "Writing to " + getStorageDir());
 
-                try {
-                    writer = new FileWriter(new File(getStorageDir(), "App_AccelerometerAndGyroscope_"  + Calendar.getInstance().getTime() + ".csv"));
-                    writer.write(String.format("ACCELEROMETER X," + "ACCELEROMETER Y,"+ "ACCELEROMETER Z," + "GRYOSCOPE X," + "GRYOSCOPE Y," + "GRYOSCOPE Z," + "TIMESTAMP, \n"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer = new FileWriter(new File(getStorageDir(), "App_AccelerometerAndGyroscope_"  + Calendar.getInstance().getTime() + ".csv"));
+//                    writer.write(String.format("ACCELEROMETER X," + "ACCELEROMETER Y,"+ "ACCELEROMETER Z," + "GRYOSCOPE X," + "GRYOSCOPE Y," + "GRYOSCOPE Z," + "TIMESTAMP, \n"));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
 
@@ -156,8 +195,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
 
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
                 chronometer.stop();
-                Log.d(TAG, "Chronometer started ");
+                Log.d(TAG, "Chronometer stop ");
                 Log.d(TAG, "Button stop and closing file ");
                 //xValue.setText("SAVING TO FILE " );
                 buttonStart.setEnabled(true);
@@ -166,11 +206,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorManager.flush(MainActivity.this);
                 sensorManager.unregisterListener(MainActivity.this);
 
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
                 //change to prediction results
@@ -247,11 +287,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.d(TAG, " to acc stack" );
                 accelerometerValues = sensorEvent.values.clone ();
 
-                try {
-                    writer.write(String.format("%f, %f, %f, %f, %f, %f, %s\n", accelerometerValues[0], accelerometerValues[1], accelerometerValues[2], gyroValues[0],  gyroValues[1],  gyroValues[2], millisInString));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    writer.write(String.format("%f, %f, %f, %f, %f, %f, %s\n", accelerometerValues[0], accelerometerValues[1], accelerometerValues[2], gyroValues[0],  gyroValues[1],  gyroValues[2], millisInString));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
 
 
@@ -267,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "counter val: " + counter );
 
             //saving to arrays and checking counter
-            if (counter <= 3){
+            if (counter <= 4){
                 //save data to array
                 rawWindowSensorData[counter][0] = accelerometerValues[0];
                 rawWindowSensorData[counter][1] = accelerometerValues[1];
@@ -281,16 +321,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-                //coutner is 3 so it's looking at that window
-                if (counter == 3){
+                //coutner is 4 so it's looking at that window
+                if (counter == 4){
+                    //checking window being sent
                     Log.d(TAG, "saving window array: " + Arrays.deepToString(rawWindowSensorData) );
 
+                    //test input
+                    float [] testInput = net.testInput();
+
                     //send data to preprocess
+//                    preprocess preprocessOutput = new preprocess(rawWindowSensorData);
+//                    Log.d(TAG, "lenght preprocess coming out  " + preprocessOutput.features.length);
+//
+
+
+//
+//                    for(int i = 0; i < preprocessOutputFixPreprocess.length; i++){
+//                        Log.d(TAG, "preprocess output array at   " + i + "   " + preprocessOutputFixPreprocess[i]);
+//                    }
+//                    preprocessOutputFixPreprocess[14] = 0;
+
 
 
                     //do operations for prediction
+                    net.predict(testInput);
 
-                    //store data in a hashmap and check which exercise has the highest number
+
+                    //Setting text
+                    realTimePredictions.setText(net.getExerciseOfMaxProbability() + "\n" + decimalFormat.format(net.getMaxProbability()*100) +"%");
 
 
                     //reiniate counter
