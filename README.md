@@ -6,6 +6,7 @@ https://www.tutorialfor.com/questions-150181.htm
 https://www.youtube.com/watch?v=pkT7DU1Yo9Q&list=PLc2rvfiptPSQrErIlwHz7DZrNfhFdDXa6&ab_channel=KGPTalkie
 https://github.com/MalithaShan/Accelerometer-Gyroscope
 https://www.youtube.com/watch?v=b3T_qajfIWY&t=313s&ab_channel=AnggaRisky
+https://www.youtube.com/watch?v=JnhW5tQ_7Vo&t=109s
 
 Icons and font used: 
 https://www.flaticon.com/authors/good-ware 
