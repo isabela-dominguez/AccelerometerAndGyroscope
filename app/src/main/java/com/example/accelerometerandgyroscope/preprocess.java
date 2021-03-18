@@ -9,6 +9,7 @@ public class preprocess {
     // x, y, z accel SD; x, y, z gyro SD; x, y, z accel fft
 
     public preprocess(float[][] exerData) {
+        features = new float[16];
         means_and_SMA(exerData);    // 0 to 6
         std_devs(exerData);         // 7 to 12
         fast_fourier(exerData);     // 13 to 15
@@ -56,6 +57,7 @@ public class preprocess {
             for (int k = 0; k < temp.length; k++) {
                 features[i + 7] += java.lang.Math.pow((temp[k] - mean), 2);
             }
+
             features[i + 7] = (float) java.lang.Math.sqrt(features[i + 7] / exerData.length);
         }
     }
@@ -65,13 +67,15 @@ public class preprocess {
 
         // for each axis of acceleration...
         for (int i = 0; i < 3; i++) {
-            double[] temp = new double[exerData.length];
+            double[] temp = new double[exerData.length + 3];	//GETTING ERROR, PADDING TO MAKE THIS ARRAY LENGTH A POWER OF 2
 
             // make an array of all the entries for this axis
             // (again for convenience)
             for (int j = 0; j < exerData.length; j++) {
                 temp[j] = exerData[j][i];
             }
+
+            //System.out.println(Arrays.toString(temp));
 
             // take the fast fourier transform over the entire axis
             org.apache.commons.math3.complex.Complex[] complex = fastFourierTransformer.transform(temp, org.apache.commons.math3.transform.TransformType.FORWARD);
