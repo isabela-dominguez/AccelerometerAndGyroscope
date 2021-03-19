@@ -1,9 +1,16 @@
 package com.example.accelerometerandgyroscope;
+import android.util.Log;
+
 import org.apache.commons.math3.transform.FastFourierTransformer;
+
+import java.util.Arrays;
 
 // preprocessing FOR A SINGLE WINDOW AT A TIME
 public class preprocess {
-    public float[] features;    // 16 input features to feed into the network
+    //tag
+    private static final String TAG = "Preprocess: ";
+
+    public float[] features = new float[17];    // 16 input features to feed into the network
     // OUTPUT ARRAY VALUE ORDER:
     // x, y, z accel mean; x, y, z gyro mean; accel SMA;
     // x, y, z accel SD; x, y, z gyro SD; x, y, z accel fft
@@ -95,6 +102,7 @@ public class preprocess {
             }
 
             // get real components' absolute values & sum them for this axis
+            //array index out of bounds!!!! If declared as a [16] array it crashes with 17 is ok
             for (int m = 0; m < loops; m++) {
                 features[i + 13] += (float) complex[m].getReal();
             }
@@ -137,5 +145,10 @@ public class preprocess {
         features[14] = (features[14] - 6) / (58576 - 6);
         // z acceleration fast fourier transform
         features[15] = (features[15] - 45) / (63472 - 45);
+    }
+
+
+    public float[] getFeatures(){
+        return features;
     }
 }

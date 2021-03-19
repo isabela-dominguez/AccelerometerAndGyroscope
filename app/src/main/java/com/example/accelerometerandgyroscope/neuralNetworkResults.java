@@ -7,6 +7,9 @@ import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 //import com.example.accelerometerandgyroscope.ml.MlpExercise;
@@ -18,26 +21,51 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 import android.widget.Toast;
 
-public class neuralNetworkResults extends AppCompatActivity {
+public class neuralNetworkResults extends AppCompatActivity{
 
     //textviews
-    TextView results, probabilities;
+    TextView probabilities, btnweekly;
+    ImageView exerciseImg, greatworkout;
     String probs ="";
+
+    //animation
+    Animation animpage, bttone, bttwo, btthree, ltr;
+
+
+    //writer
+    FileWriter writer;
+    FileReader reader;
+    File file;
 
     //From: https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
     Interpreter tflite;
 
     //tag
-    private static final String TAG = "NeuralNetwork: ";
+    private static final String TAG = "NeuralNetwork results: ";
+
+    //decimal format
+    DecimalFormat decimalFormat =  new DecimalFormat("###.##");
 
 
     @Override
@@ -46,120 +74,110 @@ public class neuralNetworkResults extends AppCompatActivity {
         setContentView(R.layout.activity_neural_network_results);
 
         //setting up text
-        results = (TextView) findViewById(R.id.results);
         probabilities = (TextView) findViewById(R.id.probabilities);
+        exerciseImg = (ImageView) findViewById(R.id.workoutResult);
+        greatworkout = (ImageView) findViewById(R.id.greatWorkout);
+        btnweekly = (TextView) findViewById(R.id.btnbuckets);
+
+        //load animation
+        animpage = AnimationUtils.loadAnimation(this, R.anim.animpage);
+        bttone = AnimationUtils.loadAnimation(this, R.anim.bttone);
+        bttwo = AnimationUtils.loadAnimation(this, R.anim.bttwo);
+        btthree = AnimationUtils.loadAnimation(this, R.anim.btthree);
+        ltr = AnimationUtils.loadAnimation(this, R.anim.ltr);
 
 
-
-        // from https://www.youtube.com/watch?v=RhjBDxpAOIc&ab_channel=TensorFlow
-        openModel();
-
-
-        //prediction values
-        float[] test = new float[16];
-        float[][] prediction = doInference(test);
+        //pre-process tests
+        //values
+        //float[][] preprocessTest = {{(float) -19.6091,	(float)-19.6085,	(float)1.4533,	(float)-2.3289, (float)-3.1108, (float)1.1325}, {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.975},
+               // {(float)19.6079,	(float)-19.6085,	(float)19.6085,	(float)-7.357,	(float)1.4899,	(float)9.9751}, {(float)19.6079,	(float)18.4072,	(float)19.6085,	(float)-5.6551,(float)	0.8399,	(float)9.0988}, {(float)19.6079,	(float)-7.8961,	(float)19.6085,	(float)3.682,	(float)2.1634,	(float)-1.3134}};
 
 
-        //tag of predictions
-        Log.d(TAG, "predictions:  " + prediction);
+        greatworkout.startAnimation(bttone);
+        btnweekly.startAnimation(btthree);
+        probabilities.startAnimation(bttone);
+        exerciseImg.startAnimation(bttone);
+
+        String result = neuralNetwork.finalExercisePrediction;
+        float prob;
 
 
-        //printing the values
-        for(int i = 0; i <4; i++){
-            probs += "at i: " + i + "  =>" + prediction[0][i] + "\n";
+        if (result.equals("Jumping jacks")){
+            prob = neuralNetwork.jumpingJacksProb;
+            exerciseImg.setImageResource(R.drawable.jumping);
         }
+        else if (result.equals("Push ups")){
+            prob = neuralNetwork.pushUpsProb;
+            exerciseImg.setImageResource(R.drawable.pushup);
+        }
+        else if (result.equals("Squats")){
+            prob = neuralNetwork.squatsProb;
+            exerciseImg.setImageResource(R.drawable.squat);
+        }
+        else {
+            prob = neuralNetwork.sitUpsProb;
+            exerciseImg.setImageResource(R.drawable.situp);
+        }
+
+
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+
 
         //setting to label
-        probabilities.setText(probs);
+        probabilities.setText("We are "+ decimalFormat.format(prob*100) + "% sure\nyou were doing\n" + result +"!");
 
-        //hashed maps with labels
-        Hashtable<String, Float> mappedProbabilities = mapOutputToLabel(prediction);
-        Log.d(TAG, "hash map:  " + mappedProbabilities);
+        //writing to file
+        Log.d(TAG, "Writing to " + getStorageDir());
 
+        //creating date for file
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMM-EEEE HH:mm");
+        String dateWithMins  = dateFormat.format(new Date());
 
+        //check if a file already exsitis
+        file = new File(getStorageDir(), "Exercises performed.csv");
 
-
-    }
-
-
-
-    public MappedByteBuffer loadModelFile() throws IOException{
-        //open model suing input stream and memory map to it to load
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mlpExercise.tflite");
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLenght = fileDescriptor.getDeclaredLength();
-
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLenght);
-    }
-
-
-    public float[][] doInference(float[] inputNumbers){
-        //input vals
-        //change numbersTestInput to inputnumbers.
-        float[] numbersTestInput = new float[16];
-        numbersTestInput[0] = (float) 0.417475728;
-        numbersTestInput[1] = (float) 0.4875;
-        numbersTestInput[2] = (float) 0.463414634;
-        numbersTestInput[3] = (float) 0.857142857;
-        numbersTestInput[4] = (float) 0.363636364;
-        numbersTestInput[5] = (float) 0.727272727;
-        numbersTestInput[6] = (float) 0.515625;
-        numbersTestInput[7] = (float) 0.416666667;
-        numbersTestInput[8] = (float) 0.411764706;
-        numbersTestInput[9] = (float) 0.212121212;
-        numbersTestInput[10] = (float) 0.666666667;
-        numbersTestInput[11] = (float) 0.25;
-        numbersTestInput[12] = (float) 0.444444444;
-        numbersTestInput[13] = (float) 0.178815956;
-        numbersTestInput[14] = (float) 0.241270137;
-        numbersTestInput[15] = (float) 0.218049168;
-
-
-
-        //output shape
-        float[][] output = new float[1][4];
-
-        //run inference
-        tflite.run(numbersTestInput, output);
-
-        return output;
-
-
-    }
-
-    public Hashtable<String, Float> mapOutputToLabel(float[][] outputProbs){
-        Hashtable<String, Float> mappedProbabilities = new Hashtable<String, Float>();
-        for(int i = 0; i <4; i++){
-            //probs += "at i: " + i + "  =>" + outputProbs[0][i] + "\n";
-            if (i == 0){
-                mappedProbabilities.put("Jumping jacks", outputProbs[0][i]);
-            }
-            else if (i == 1){
-                mappedProbabilities.put("Push ups", outputProbs[0][i]);
-            }
-            else if (i == 2){
-                mappedProbabilities.put("Squats", outputProbs[0][i]);
-            }
-            else {
-                mappedProbabilities.put("Sit ups", outputProbs[0][i]);
-            }
-
-        }
-
-        return mappedProbabilities;
-
-    }
-
-    public void openModel(){
+        //try creating it and writing to it
         try {
-            tflite = new Interpreter(loadModelFile());
-        } catch (Exception ex){
-            ex.printStackTrace();
-            Log.d(TAG, "error while opening model  " );
+            if(!file.exists()){
+                //file does not exits
+                file.createNewFile();
+            }
+
+            writer = new FileWriter(file, true);
+            writer.write(String.format("%s, %s\n", result, dateWithMins));
+            Log.d(TAG, "File does not exist it's new and writing to it ");
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
+
+        //closing file
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
     }
+
+
+    private String getStorageDir() {
+        Log.d(TAG, "storage directory " + this.getExternalFilesDir(null).getAbsolutePath());
+        return this.getExternalFilesDir(null).getAbsolutePath();
+
+        // SAVING TO: storage/emulated/0/Android/data/com.example.accelerometerandgyroscope/files
+        // open it on device file explorer.
+    }
+
+
 
 
 
