@@ -111,6 +111,7 @@ public class neuralNetwork {
     }
 
     public void averageProbabilityResults(){
+        Log.d(TAG, "average probability results ");
         probAveragedResult = calculateAverage(getProbabilitiesForAveraging());
     }
 
@@ -149,8 +150,8 @@ public class neuralNetwork {
                     jumpingJacksProbtot = output[0][i];
                 }
 
-                if (output[0][1] > 0.1){
-                    probabilitiesForAveraging.add(output[0][1]);
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
                 }
 
                 jumpingJacksProb = output[0][i];
@@ -162,8 +163,8 @@ public class neuralNetwork {
                     pushUpsProbtot = output[0][i];
                 }
 
-                if (output[0][1] > 0.1){
-                    probabilitiesForAveraging.add(output[0][1]);
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
                 }
 
                 pushUpsProb = output[0][i];
@@ -176,8 +177,8 @@ public class neuralNetwork {
                     squatsProbtot = output[0][i];
                 }
 
-                if (output[0][1] > 0.1){
-                    probabilitiesForAveraging.add(output[0][1]);
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
                 }
 
                 squatsProb = output[0][i];
@@ -191,8 +192,8 @@ public class neuralNetwork {
                 }
                 sitUpsProb = output[0][i];
 
-                if (output[0][1] > 0.1){
-                    probabilitiesForAveraging.add(output[0][1]);
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
                 }
 
             }
@@ -308,10 +309,14 @@ public class neuralNetwork {
     }
 
     public float calculateAverage(ArrayList<Float> probs) {
+        Log.d(TAG, "calculate average function ");
         float sum = 0;
+        Log.d(TAG, "array list with probs:  " + probs);
+        Log.d(TAG, "array list with probs size:  " + probs.size());
         if(!probs.isEmpty()) {
             for (Float prob : probs) {
                 sum += prob;
+
             }
             return sum / probs.size();
         }

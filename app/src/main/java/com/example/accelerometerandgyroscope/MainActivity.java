@@ -206,6 +206,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sensorManager.flush(MainActivity.this);
                 sensorManager.unregisterListener(MainActivity.this);
 
+                //average proabilities
+                net.averageProbabilityResults();
+
 //                try {
 //                    writer.close();
 //                } catch (IOException e) {
