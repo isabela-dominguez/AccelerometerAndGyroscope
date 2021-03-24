@@ -10,7 +10,7 @@ public class preprocess {
     //tag
     private static final String TAG = "Preprocess: ";
 
-    public float[] features = new float[17];    // 16 input features to feed into the network
+    public float[] features;    // 16 input features to feed into the network
     // OUTPUT ARRAY VALUE ORDER:
     // x, y, z accel mean; x, y, z gyro mean; accel SMA;
     // x, y, z accel SD; x, y, z gyro SD; x, y, z accel fft

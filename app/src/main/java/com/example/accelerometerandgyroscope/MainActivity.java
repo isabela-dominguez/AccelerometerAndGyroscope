@@ -330,9 +330,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     float [] testInput = net.testInput();
 
                     //send data to preprocess
-//                    preprocess preprocessOutput = new preprocess(rawWindowSensorData);
-//                    Log.d(TAG, "lenght preprocess coming out  " + preprocessOutput.features.length);
-//
+                    preprocess preprocessOutput = new preprocess(rawWindowSensorData);
+                    Log.d(TAG, "lenght preprocess coming out  " + preprocessOutput.features.length);
+                    Log.d(TAG, "ARRAY COMING FROM preprocess:   " + Arrays.deepToString(new float[][]{preprocessOutput.features}));
+
+                    float[] preprocessOutMaybeNan= preprocessOutput.getFeatures();
+                    float[] preprocessOut= preprocessOutput.getFeatures();
+
+                    //remove Nan from pre-process funcs
+                     for(int i =0; i < preprocessOutput.getFeatures().length; i++ ){
+                         if (((Float) preprocessOutMaybeNan[i]).isNaN()){
+                             preprocessOut[i] = 0;
+
+                         }
+                     }
+
+                    Log.d(TAG, "ARRAY preprocess setting NaN to zero:   " + Arrays.deepToString(new float[][]{preprocessOut}));
+
 
 
 //
@@ -344,7 +358,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
                     //do operations for prediction
-                    net.predict(testInput);
+                    net.predict(preprocessOut);
+
+                    //hash map coming from network
+                    Log.d(TAG, "Hash map from neural net   " + net.getMap());
+                    Log.d(TAG, "Prob for jumping   " + neuralNetwork.jumpingJacksProb + " prob for push up "+ neuralNetwork.pushUpsProb + " prob for sit up " + neuralNetwork.sitUpsProb + " prob for squats " + neuralNetwork.squatsProb);
 
 
                     //Setting text
