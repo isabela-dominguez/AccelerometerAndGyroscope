@@ -3,4 +3,8 @@
     <item name="checkBox42" type="id" />
     <item name="textView" type="id" />
     <item name="textView27" type="id" />
+    <item name="buckettop" type="id" />
+    <item name="bucketbottom" type="id" />
+    <item name="realtimepredictions" type="id" />
+    <item name="linearLayout" type="id" />
 </resources>

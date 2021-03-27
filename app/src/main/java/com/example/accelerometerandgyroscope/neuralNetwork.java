@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -55,6 +56,9 @@ public class neuralNetwork {
     //output shape
     public float[][] output = new float[1][4];
 
+    //array list with filtered probs to calculate average probability
+    ArrayList<Float> probabilitiesForAveraging = new ArrayList<Float>();
+
     //output hahs
     //Hashtable<String, Float> mappedProbabilities = new Hashtable<String, Float>();
     public Hashtable<String, Float> mappedProbabilities = new Hashtable<>();
@@ -66,11 +70,27 @@ public class neuralNetwork {
     public static float sitUpsProb;
     public static String finalExercisePrediction;
 
+    public static float pushUpsProbtot;
+    public static float jumpingJacksProbtot;
+    public static float squatsProbtot;
+    public static float sitUpsProbtot;
+
+    //prob averaged
+    public static float probAveragedResult;
+
+    //max probability from average array
+    public static float maxProbFromAvgArray;
 
 
 
     //context
     private Context context;
+
+    //counters
+    int counterJump = 0;
+    int counterPush =0;
+    int counterSquat = 0;
+    int counterSit = 0;
 
 
 
@@ -91,6 +111,12 @@ public class neuralNetwork {
         openModel();
         doInference(input);
         mapOutputToLabel();
+    }
+
+    public void averageProbabilityResults(){
+        Log.d(TAG, "average probability results ");
+        probAveragedResult = calculateAverage(getProbabilitiesForAveraging());
+        maxProbFromAvgArray = Collections.max((getProbabilitiesForAveraging()));
     }
 
 
@@ -124,20 +150,56 @@ public class neuralNetwork {
             //probs += "at i: " + i + "  =>" + outputProbs[0][i] + "\n";
             if (i == 0){
                 mappedProbabilities.put("Jumping jacks",output[0][i] + mappedProbabilities.get("Jumping jacks"));
+                if (jumpingJacksProbtot < output[0][i]) {
+                    jumpingJacksProbtot = output[0][i];
+                }
+
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
+                }
+
                 jumpingJacksProb = output[0][i];
 
             }
             else if (i == 1){
                 mappedProbabilities.put("Push ups", output[0][i]  + mappedProbabilities.get("Push ups"));
+                if (pushUpsProbtot < output[0][i]) {
+                    pushUpsProbtot = output[0][i];
+                }
+
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
+                }
+
                 pushUpsProb = output[0][i];
+
+
             }
             else if (i == 2){
                 mappedProbabilities.put("Squats", output[0][i] + mappedProbabilities.get("Squats"));
+                if (squatsProbtot < output[0][i]) {
+                    squatsProbtot = output[0][i];
+                }
+
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
+                }
+
                 squatsProb = output[0][i];
+
             }
             else {
                 mappedProbabilities.put("Sit ups", output[0][i] + mappedProbabilities.get("Sit ups"));
+
+                if (sitUpsProbtot < output[0][i]) {
+                    sitUpsProbtot = output[0][i];
+                }
                 sitUpsProb = output[0][i];
+
+                if (output[0][i] > 0.1){
+                    probabilitiesForAveraging.add(output[0][i]);
+                }
+
             }
 
         }
@@ -206,18 +268,22 @@ public class neuralNetwork {
 
 
     public float getPushUpsProb(){
+
         return pushUpsProb;
     }
 
     public float getJumpingJacksProb(){
+
         return jumpingJacksProb;
     }
 
     public float getSitUpsProb() {
+
         return sitUpsProb;
     }
 
     public float getSquatsProb() {
+
         return squatsProb;
     }
 
@@ -241,4 +307,25 @@ public class neuralNetwork {
     public String getFinalProbabilityExercise(){
         return finalExercisePrediction;
     }
+
+    public ArrayList<Float> getProbabilitiesForAveraging(){
+        return probabilitiesForAveraging;
+    }
+
+    public float calculateAverage(ArrayList<Float> probs) {
+        Log.d(TAG, "calculate average function ");
+        float sum = 0;
+        Log.d(TAG, "array list with probs:  " + probs);
+        Log.d(TAG, "array list with probs size:  " + probs.size());
+        if(!probs.isEmpty()) {
+            for (Float prob : probs) {
+                sum += prob;
+
+            }
+            return sum / probs.size();
+        }
+        return sum;
+    }
+
+
 }

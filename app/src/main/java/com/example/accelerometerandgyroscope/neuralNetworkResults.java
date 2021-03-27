@@ -103,28 +103,33 @@ public class neuralNetworkResults extends AppCompatActivity{
 
 
         if (result.equals("Jumping jacks")){
-            prob = neuralNetwork.jumpingJacksProb;
+            prob = neuralNetwork.jumpingJacksProbtot;
             exerciseImg.setImageResource(R.drawable.jumping);
         }
         else if (result.equals("Push ups")){
-            prob = neuralNetwork.pushUpsProb;
+            prob = neuralNetwork.pushUpsProbtot;
             exerciseImg.setImageResource(R.drawable.pushup);
         }
         else if (result.equals("Squats")){
-            prob = neuralNetwork.squatsProb;
+            prob = neuralNetwork.squatsProbtot;
             exerciseImg.setImageResource(R.drawable.squat);
         }
         else {
-            prob = neuralNetwork.sitUpsProb;
+            prob = neuralNetwork.sitUpsProbtot;
             exerciseImg.setImageResource(R.drawable.situp);
         }
 
 
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
 
+        //using array list to averga probabilities
+        float avgProbs = neuralNetwork.probAveragedResult;
+        Log.d(TAG, "Average prob:  " + decimalFormat.format(avgProbs*100));
+
 
         //setting to label
-        probabilities.setText("We are "+ decimalFormat.format(prob*100) + "% sure\nyou were doing\n" + result +"!");
+        //probabilities.setText("We are "+ decimalFormat.format(prob*100) + "% sure\nyou were doing\n" + result +"!");
+        probabilities.setText("We are "+ decimalFormat.format(avgProbs*100) + "% sure\nyou were doing\n" + result +"!\n" + "Top prediction was: \n"+ decimalFormat.format(neuralNetwork.maxProbFromAvgArray*100) + "%" );
 
         //writing to file
         Log.d(TAG, "Writing to " + getStorageDir());
