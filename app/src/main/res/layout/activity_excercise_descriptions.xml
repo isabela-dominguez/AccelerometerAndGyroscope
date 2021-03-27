@@ -27,7 +27,7 @@
             android:layout_marginTop="30dp"
             android:lineSpacingExtra="8dp"
             android:textAlignment="center"
-            android:text="INSTRUCTIONS"
+            android:text="EXCERSISE\n INSTRUCTIONS"
             android:fontFamily="@font/bubblebobble"
             android:textColor="#FFFFFF"
             android:textSize="40sp"
@@ -36,8 +36,27 @@
 
             />
 
+<!--        <TextView-->
+<!--            android:id="@+id/subintropage"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="0dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:lineSpacingExtra="8dp"-->
+<!--            android:paddingLeft="20dp"-->
+<!--            android:paddingRight="20dp"-->
+<!--            android:fontFamily="@font/mlight"-->
+<!--            android:textAlignment="center"-->
+<!--            android:text="Follow these instructions for the exercises:"-->
+
+<!--            android:textColor="#FFFFFF"-->
+<!--            android:textSize="18sp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/instructions"/>-->
+
+
         <TextView
-            android:id="@+id/subintropage"
+            android:id="@+id/exercisephoneplacement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
@@ -45,12 +64,12 @@
             android:lineSpacingExtra="8dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:fontFamily="@font/mlight"
+            android:fontFamily="@font/mmedium"
             android:textAlignment="center"
-            android:text="Water is dripping! You must fill in your bucket with the water! Exercise everyday to fill your bucket!\n\n We keep track of your exercise for you. Choose between: jumping jacks, sit ups, push ups, and squats. The game will predict what exercise you did. The next page will take you to the timer and the water dropping.\n\nOnce you complete your workout, you will be able to see your weekly exercise buckets.\n\nBeware, the future of drip drop is in your hands!"
+            android:text="\nSit-ups:\nPhone screen against chest, hands against the back of the phone \n\nPush-ups:\nPhone in pocket\n\nJumping Jacks:\nHolding phone in one hand\n\nSquats:\nPhone in pocket or hold phone in both hands and keep hands agaisnt chest"
 
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/instructions"/>
 

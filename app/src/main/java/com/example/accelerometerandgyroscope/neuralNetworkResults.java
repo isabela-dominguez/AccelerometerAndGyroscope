@@ -129,7 +129,7 @@ public class neuralNetworkResults extends AppCompatActivity{
 
         //setting to label
         //probabilities.setText("We are "+ decimalFormat.format(prob*100) + "% sure\nyou were doing\n" + result +"!");
-        probabilities.setText("We are "+ decimalFormat.format(avgProbs*100) + "% sure\nyou were doing\n" + result +"!");
+        probabilities.setText("We are "+ decimalFormat.format(avgProbs*100) + "% sure\nyou were doing\n" + result +"!\n" + "Top prediction was: \n"+ decimalFormat.format(neuralNetwork.maxProbFromAvgArray*100) + "%" );
 
         //writing to file
         Log.d(TAG, "Writing to " + getStorageDir());

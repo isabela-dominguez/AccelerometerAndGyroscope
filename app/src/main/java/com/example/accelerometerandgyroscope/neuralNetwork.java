@@ -78,6 +78,9 @@ public class neuralNetwork {
     //prob averaged
     public static float probAveragedResult;
 
+    //max probability from average array
+    public static float maxProbFromAvgArray;
+
 
 
     //context
@@ -113,6 +116,7 @@ public class neuralNetwork {
     public void averageProbabilityResults(){
         Log.d(TAG, "average probability results ");
         probAveragedResult = calculateAverage(getProbabilitiesForAveraging());
+        maxProbFromAvgArray = Collections.max((getProbabilitiesForAveraging()));
     }
 
 
@@ -322,4 +326,6 @@ public class neuralNetwork {
         }
         return sum;
     }
+
+
 }
